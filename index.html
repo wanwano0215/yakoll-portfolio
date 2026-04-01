@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>やこる | Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== リセット・ベース ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #f0f2f5;
+      line-height: 2;
+      font-size: 17px;
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 背景アニメーション ===== */
+    .bg-gradient {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
+    }
+
+    .floating-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 400px; height: 400px; background: rgba(99, 102, 241, 0.1); top: 10%; left: -5%; animation-delay: 0s; }
+    .orb-2 { width: 350px; height: 350px; background: rgba(16, 185, 129, 0.08); top: 60%; right: -5%; animation-delay: -7s; }
+    .orb-3 { width: 300px; height: 300px; background: rgba(139, 92, 246, 0.06); top: 40%; left: 40%; animation-delay: -14s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -40px) scale(1.05); }
+      50% { transform: translate(-20px, 20px) scale(0.95); }
+      75% { transform: translate(40px, 30px) scale(1.02); }
+    }
+
+    /* ===== パーティクル ===== */
+    .particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: drift linear infinite;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ===== ナビゲーション ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      backdrop-filter: blur(20px);
+      background: rgba(10, 10, 15, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    nav.scrolled {
+      padding: 0.6rem 2rem;
+      background: rgba(10, 10, 15, 0.9);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.05em;
+    }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      color: #cdd6e2;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 400;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, #818cf8, #34d399);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: #e2e8f0; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: #94a3b8;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ===== メインコンテンツ ===== */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ===== ヒーローセクション ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+    .hero-content { max-width: 700px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1.2rem;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      color: #a5b4fc;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: #34d399;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 50%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeInUp 0.8s ease 0.1s forwards;
+      opacity: 0;
+    }
+    .hero .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: #b0c0d4;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease 0.2s forwards;
+      opacity: 0;
+    }
+    .hero-description {
+      font-size: 1.05rem;
+      color: #cdd6e2;
+      line-height: 2;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 0.8s ease 0.3s forwards;
+      opacity: 0;
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      animation: fadeInUp 0.8s ease 0.4s forwards;
+      opacity: 0;
+    }
+    .hero-tag {
+      padding: 0.4rem 1.1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      font-size: 0.9rem;
+      color: #cdd6e2;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: #a0b0c4;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      animation: fadeInUp 0.8s ease 0.6s forwards;
+      opacity: 0;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, #475569, transparent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 1; height: 40px; }
+      50% { opacity: 0.3; height: 25px; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== セクション共通 ===== */
+    section {
+      padding: 6rem 0;
+    }
+    .section-header {
+      margin-bottom: 3rem;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #818cf8;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.7rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.75rem;
+    }
+    .section-desc {
+      font-size: 1rem;
+      color: #b0c0d4;
+      max-width: 600px;
+    }
+
+    /* ===== カード ===== */
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* ===== サービスセクション ===== */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .service-card .service-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+    }
+    .service-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.75rem;
+    }
+    .service-card p {
+      font-size: 1rem;
+      color: #b0c0d4;
+      line-height: 2;
+    }
+    .icon-purple { background: rgba(139, 92, 246, 0.15); }
+    .icon-blue { background: rgba(59, 130, 246, 0.15); }
+    .icon-green { background: rgba(16, 185, 129, 0.15); }
+    .icon-pink { background: rgba(236, 72, 153, 0.15); }
+    .icon-amber { background: rgba(245, 158, 11, 0.15); }
+
+    /* ===== 強み ===== */
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    .strength-card {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+    .strength-num {
+      font-size: 2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .strength-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .strength-card p {
+      font-size: 1rem;
+      color: #b0c0d4;
+      line-height: 2;
+    }
+
+    /* ===== ツール ===== */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .tool-card {
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+    .tool-icon {
+      width: 56px; height: 56px;
+      margin: 0 auto 1rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tool-card h4 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      margin-bottom: 0.25rem;
+    }
+    .tool-card p {
+      font-size: 0.95rem;
+      color: #a0b0c4;
+    }
+
+    /* ===== 経歴 ===== */
+    .experience-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .exp-card {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .exp-number {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(52, 211, 153, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+    .exp-content h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .exp-content p {
+      font-size: 1rem;
+      color: #b0c0d4;
+      line-height: 2;
+    }
+    .exp-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .exp-gallery img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .exp-gallery img:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+    .exp-gallery video {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .exp-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+    .exp-tag {
+      padding: 0.3rem 0.8rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #b0c0d4;
+    }
+
+    /* ===== 大切にしていること ===== */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .value-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .value-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(99, 102, 241, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .value-card p {
+      font-size: 1.05rem;
+      color: #cdd6e2;
+      line-height: 2;
+    }
+
+    /* ===== CTA セクション ===== */
+    .cta-section {
+      text-align: center;
+      padding: 5rem 0;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(52, 211, 153, 0.05));
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 1.5rem;
+      padding: 3.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.5), rgba(52, 211, 153, 0.5), transparent);
+    }
+    .cta-box h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 1rem;
+    }
+    .cta-box p {
+      font-size: 1rem;
+      color: #b0c0d4;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-methods {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+    .cta-btn-primary {
+      background: linear-gradient(135deg, #6366f1, #34d399);
+      color: #fff;
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+    }
+    .cta-btn-primary:hover {
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.35);
+      transform: translateY(-2px);
+    }
+    .cta-btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+    }
+    .cta-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* ===== フッター ===== */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: #334155;
+      font-size: 0.8rem;
+    }
+
+    /* ===== スクロールアニメーション ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 768px) {
+      main { padding: 0 1.25rem; }
+      nav { padding: 0.8rem 1.25rem; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: rgba(10, 10, 15, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 1rem 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .hamburger { display: flex; }
+      .strengths-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      section { padding: 4rem 0; }
+      .cta-box { padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 背景エフェクト -->
+  <div class="bg-gradient"></div>
+  <div class="floating-orb orb-1"></div>
+  <div class="floating-orb orb-2"></div>
+  <div class="floating-orb orb-3"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- ナビゲーション -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">YAKOLL</div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">自己紹介</a></li>
+        <li><a href="#services">対応業務</a></li>
+        <li><a href="#strengths">強み</a></li>
+        <li><a href="#tools">ツール</a></li>
+        <li><a href="#experience">業務経験</a></li>
+        <li><a href="#values">大切にしていること</a></li>
+        <li><a href="#contact">お問い合わせ</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="メニュー">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ===== ヒーロー ===== -->
+    <section class="hero" id="top">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Available for Work
+        </div>
+        <h1>やこるポートフォリオ</h1>
+        <p class="subtitle">AI × 制作 × 進行管理</p>
+        <p class="hero-description">
+          AIを活用した画像・動画生成から、案件の企画進行・コミュニティ運用補佐まで。<br>
+          制作と進行の両面から、プロジェクトを支えるフリーランスです。
+        </p>
+        <div class="hero-tags">
+          <span class="hero-tag">画像生成</span>
+          <span class="hero-tag">動画生成</span>
+          <span class="hero-tag">動画編集</span>
+          <span class="hero-tag">進行管理</span>
+          <span class="hero-tag">コミュニティ運用</span>
+          <span class="hero-tag">AI活用</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 自己紹介 ===== -->
+    <section id="about">
+      <div class="section-header reveal">
+        <span class="section-label">About</span>
+        <h2 class="section-title">自己紹介</h2>
+      </div>
+      <div class="card reveal" style="max-width: 800px;">
+        <p style="font-size: 1.05rem; color: #dde3ec; line-height: 2.3;">
+          はじめまして、やこるです。<br><br>
+          これまで、<strong style="color: #c7d2fe;">AIを活用した画像生成・動画生成・簡易的な動画編集</strong>をはじめ、
+          <strong style="color: #c7d2fe;">コミュニティ運用補佐やAI動画案件の企画進行・販売補助</strong>などに携わってきました。<br><br>
+          制作そのものだけでなく、外注先への指示出し、スケジュール管理、進行補助、連絡対応など、
+          案件が円滑に進むための実務面にも幅広く対応してきました。<br><br>
+          また、Claude Code や ChatGPT などのAIツールを活用し、
+          情報整理、たたき台作成、業務フロー整理なども行っています。
+        </p>
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-wrap: wrap; gap: 2rem;">
+          <div>
+            <p style="font-size: 0.9rem; color: #b0c0d4; margin-bottom: 0.25rem;">活動形態</p>
+            <p style="font-size: 1.05rem; color: #edf0f5;">オンラインのみ</p>
+          </div>
+          <div>
+            <p style="font-size: 0.9rem; color: #b0c0d4; margin-bottom: 0.25rem;">対応可能な働き方</p>
+            <p style="font-size: 1.05rem; color: #edf0f5;">業務委託 / リモート対応</p>
+          </div>
+          <div>
+            <p style="font-size: 0.9rem; color: #b0c0d4; margin-bottom: 0.25rem;">稼働時間</p>
+            <p style="font-size: 1.05rem; color: #edf0f5;">柔軟に対応可（要相談）</p>
+          </div>
+          <div>
+            <p style="font-size: 0.9rem; color: #b0c0d4; margin-bottom: 0.25rem;">連絡手段</p>
+            <p style="font-size: 1.05rem; color: #edf0f5;">Discord / Mail / ChatWork / LINE など</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 対応業務 ===== -->
+    <section id="services">
+      <div class="section-header reveal">
+        <span class="section-label">Services</span>
+        <h2 class="section-title">対応可能業務</h2>
+        <p class="section-desc">制作から進行管理まで、幅広い業務に対応しています。</p>
+      </div>
+      <div class="services-grid">
+        <div class="card service-card reveal">
+          <div class="service-icon icon-purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+          <h3>画像生成</h3>
+          <p>AIツールを用いた画像生成業務。目的や用途に応じた生成内容の調整、方向性のすり合わせまで対応します。</p>
+        </div>
+        <div class="card service-card reveal">
+          <div class="service-icon icon-blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <h3>動画生成・編集</h3>
+          <p>AIを活用した動画生成から簡易的な編集まで。制作意図に合わせた生成補助と納品を意識した調整を行います。</p>
+        </div>
+        <div class="card service-card reveal">
+          <div class="service-icon icon-green">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>コミュニティ運用補佐</h3>
+          <p>Discordなどを用いた連絡・案内補助、情報の整理・共有。参加者が動きやすい情報設計を行います。</p>
+        </div>
+        <div class="card service-card reveal">
+          <div class="service-icon icon-pink">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>企画進行・管理補助</h3>
+          <p>外注先への指示出し、スケジュール管理、進行管理。案件全体が滞らないよう調整・サポートします。</p>
+        </div>
+        <div class="card service-card reveal">
+          <div class="service-icon icon-amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <h3>AI活用業務整理</h3>
+          <p>Claude Code や ChatGPT を活用した情報整理、たたき台作成、業務フロー整理に対応します。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 強み ===== -->
+    <section id="strengths">
+      <div class="section-header reveal">
+        <span class="section-label">Strengths</span>
+        <h2 class="section-title">強み</h2>
+      </div>
+      <div class="strengths-grid">
+        <div class="card strength-card reveal">
+          <span class="strength-num">01</span>
+          <div>
+            <h3>制作と進行の両方に関われる</h3>
+            <p>生成や編集などの制作業務だけでなく、指示出しやスケジュール管理など進行面にも対応できます。</p>
+          </div>
+        </div>
+        <div class="card strength-card reveal">
+          <span class="strength-num">02</span>
+          <div>
+            <h3>要望を整理して動きやすい形にできる</h3>
+            <p>曖昧な依頼内容でも、必要な作業や優先順位を整理し、進めやすい形に落とし込むことが得意です。</p>
+          </div>
+        </div>
+        <div class="card strength-card reveal">
+          <span class="strength-num">03</span>
+          <div>
+            <h3>AIツールを実務に活用できる</h3>
+            <p>Claude Code や ChatGPT などを活用し、情報整理、たたき台作成、業務補助などに活かせます。</p>
+          </div>
+        </div>
+        <div class="card strength-card reveal">
+          <span class="strength-num">04</span>
+          <div>
+            <h3>裏方として全体を支える動きができる</h3>
+            <p>表に出る成果物だけでなく、案件が円滑に進むための調整や補助業務にも柔軟に対応できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ツール ===== -->
+    <section id="tools">
+      <div class="section-header reveal">
+        <span class="section-label">Tools</span>
+        <h2 class="section-title">使用ツール・環境</h2>
+      </div>
+      <div class="tools-grid">
+        <div class="card tool-card reveal">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h4>Claude Code</h4>
+          <p>AI開発・業務支援</p>
+        </div>
+        <div class="card tool-card reveal">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h4>ChatGPT</h4>
+          <p>情報整理・文章作成</p>
+        </div>
+        <div class="card tool-card reveal">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </div>
+          <h4>ComfyUI</h4>
+          <p>動画生成</p>
+        </div>
+        <div class="card tool-card reveal">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+          <h4>Stable Diffusion</h4>
+          <p>AI画像生成</p>
+        </div>
+        <div class="card tool-card reveal">
+          <div class="tool-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
+          </div>
+          <h4>Discord</h4>
+          <p>コミュニケーション</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 業務経験 ===== -->
+    <section id="experience">
+      <div class="section-header reveal">
+        <span class="section-label">Experience</span>
+        <h2 class="section-title">業務経験</h2>
+        <p class="section-desc">これまでに携わってきた業務の概要です。</p>
+      </div>
+      <div class="experience-list">
+        <div class="card exp-card reveal">
+          <div class="exp-number">01</div>
+          <div class="exp-content">
+            <h3>画像生成業務</h3>
+            <p>AIツールを用いた画像生成業務に対応。目的や用途に応じた生成内容の調整、必要に応じた修正や方向性のすり合わせを実施。</p>
+            <div class="exp-gallery">
+              <img src="images/image_gen_01.png" alt="画像生成サンプル1">
+              <img src="images/image_gen_02.png" alt="画像生成サンプル2">
+            </div>
+            <div class="exp-tags">
+              <span class="exp-tag">Stable Diffusion</span>
+            </div>
+          </div>
+        </div>
+        <div class="card exp-card reveal">
+          <div class="exp-number">02</div>
+          <div class="exp-content">
+            <h3>画像編集業務</h3>
+            <p>サムネイル作成をはじめ、用途に応じた画像の加工・編集に対応。デザインツールを活用し、目的に合ったビジュアルを仕上げます。</p>
+            <div class="exp-gallery" style="grid-template-columns: minmax(200px, 400px);">
+              <img src="images/image_edit_01.png" alt="画像編集サンプル">
+            </div>
+            <div class="exp-tags">
+              <span class="exp-tag">サムネイル作成</span>
+              <span class="exp-tag">CLIP STUDIO</span>
+              <span class="exp-tag">CANVA</span>
+            </div>
+          </div>
+        </div>
+        <div class="card exp-card reveal">
+          <div class="exp-number">03</div>
+          <div class="exp-content">
+            <h3>動画生成業務</h3>
+            <p>AIを活用した動画生成業務に対応。制作意図に合わせた生成補助と、関係者とのやり取りを含めた進行サポート。</p>
+            <div class="exp-gallery" style="grid-template-columns: repeat(2, minmax(150px, 300px));">
+              <video src="images/video_gen_01.mp4" controls muted playsinline></video>
+              <video src="images/video_gen_02.mp4" controls muted playsinline></video>
+            </div>
+            <div class="exp-tags">
+              <span class="exp-tag">ComfyUI</span>
+              <span class="exp-tag">AI動画生成</span>
+              <span class="exp-tag">進行サポート</span>
+            </div>
+          </div>
+        </div>
+        <div class="card exp-card reveal">
+          <div class="exp-number">04</div>
+          <div class="exp-content">
+            <h3>簡易的な動画編集</h3>
+            <p>納品や確認を意識した形での調整、制作フローの一部として編集補助を担当。</p>
+            <div class="exp-gallery" style="grid-template-columns: minmax(200px, 400px);">
+              <img src="images/video_edit_01.png" alt="動画編集サンプル">
+            </div>
+            <div class="exp-tags">
+              <span class="exp-tag">Filmora</span>
+              <span class="exp-tag">動画編集</span>
+              <span class="exp-tag">納品調整</span>
+            </div>
+          </div>
+        </div>
+        <div class="card exp-card reveal">
+          <div class="exp-number">05</div>
+          <div class="exp-content">
+            <h3>コミュニティ運用補佐</h3>
+            <p>Discordなどを用いたコミュニティ内の連絡・案内補助。参加者や関係者が動きやすいよう情報設計を実施。案内文や指示内容の整理・作成補助にも対応。</p>
+            <div class="exp-tags">
+              <span class="exp-tag">Discord</span>
+              <span class="exp-tag">情報設計</span>
+              <span class="exp-tag">案内文作成</span>
+              <span class="exp-tag">資料作成</span>
+            </div>
+          </div>
+        </div>
+        <div class="card exp-card reveal">
+          <div class="exp-number">06</div>
+          <div class="exp-content">
+            <h3>AI動画案件の企画進行・販売補助</h3>
+            <p>案件進行の補助、外注先への指示出し、スケジュール管理、連絡・確認対応。進行が滞らないよう全体を見ながらサポート。</p>
+            <div class="exp-tags">
+              <span class="exp-tag">企画進行</span>
+              <span class="exp-tag">外注管理</span>
+              <span class="exp-tag">スケジュール管理</span>
+              <span class="exp-tag">方向性調整</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 大切にしていること ===== -->
+    <section id="values">
+      <div class="section-header reveal">
+        <span class="section-label">Values</span>
+        <h2 class="section-title">仕事をする上で大切にしていること</h2>
+      </div>
+      <div class="values-grid">
+        <div class="card value-card reveal">
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <p>相手の意図を正しく整理すること</p>
+        </div>
+        <div class="card value-card reveal">
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <p>必要な作業をわかりやすく分解すること</p>
+        </div>
+        <div class="card value-card reveal">
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <p>制作だけでなく進行も意識して動くこと</p>
+        </div>
+        <div class="card value-card reveal">
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <p>関係者がやり取りしやすい形を作ること</p>
+        </div>
+        <div class="card value-card reveal">
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <p>丁寧で実務的なコミュニケーションを心がけること</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="cta-section" id="contact">
+      <div class="cta-box reveal">
+        <h2>お仕事のご相談はお気軽にどうぞ</h2>
+        <p>
+          案件の目的に合わせて、制作面・進行面の両方から柔軟にサポートいたします。
+          ご縁がありましたら、どうぞよろしくお願いいたします。
+        </p>
+        <div class="cta-methods">
+          <span class="cta-btn cta-btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
+            Discord：yakoll
+          </span>
+          <a href="mailto:0215wanwano@gmail.com" class="cta-btn cta-btn-secondary" style="text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            0215wanwano@gmail.com
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- フッター -->
+  <footer>
+    <p>&copy; 2026 YAKOLL — All rights reserved. | Updated: 2026-04-01</p>
+  </footer>
+
+  <script>
+    // パーティクル生成
+    (function() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.classList.add('particle');
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (15 + Math.random() * 25) + 's';
+        p.style.animationDelay = (Math.random() * 20) + 's';
+        p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
+        container.appendChild(p);
+      }
+    })();
+
+    // スクロールでナビスタイル変更
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ハンバーガーメニュー
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+
+    // スクロールアニメーション (Intersection Observer)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
